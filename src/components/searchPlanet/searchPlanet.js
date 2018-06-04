@@ -55,10 +55,12 @@ class SearchPlanet extends Component {
                     </div>
                     <div className="data row">
                        
-                        {results.map((planet, ind) => {
+                        {results.length > 0 ? results.map((planet, ind) => {
                             const fontSize = 20 - ind*2; 
                             return <div className='col-xs-6 col-xs-offset-4' key={planet.name} style={{fontSize:fontSize}}> {planet.name} </div>
-                        })} 
+                        }):
+                        this.state.search !== '' ? <div className='col-xs-6 col-xs-offset-4'> No results Found </div> : <div />
+                        } 
                         
                     </div>
                 </div>}
