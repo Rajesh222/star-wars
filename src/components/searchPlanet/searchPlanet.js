@@ -1,34 +1,25 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { planetFetchData } from '../../actions/planet_action';
 
-export default class SearchPlanet extends Component {
+class SearchPlanet extends Component {
     constructor() {
         super();
         this.state = {
-            results: [],
-            search: '',
-            searchResults: []
+            search: ''
         }
     }
 
     componentDidMount() {
-        axios.get('https://swapi.co/api/planets/')
-        .then((response) => {
-            console.log(response.data.results);
-            console.log('this.state: ', this.state)
-            const results = response.data.results;
-            this.setState({results})
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+      this.props.fetchData();
     }
     handleChange(e) {
         this.setState({search : e.target.value});
     }
 
     render() {
-        let results = this.state.results.filter((planet) => {
+        let results = this.props.results.filter((planet) => {
             let planetName = planet.name.toLowerCase();
             return planetName.indexOf(this.state.search.toLowerCase()) !== -1 && planet.population !== 'unknown';
         });
@@ -44,6 +35,7 @@ export default class SearchPlanet extends Component {
                 <div className="panel-heading">
                     <div>Search Page</div>      
                 </div>
+                {this.props.loading ? <div className="loading">Loading&#8230;</div>: 
                 <div className="container">
                     <div className="row">
                         <div className="col-xs-6 col-xs-offset-3">               
@@ -69,8 +61,22 @@ export default class SearchPlanet extends Component {
                         })} 
                         
                     </div>
-                </div>
+                </div>}
             </div>
         );
     }
 }
+
+function mapStateToProps(state) {
+  return {
+    results: state.planet,
+    loading: state.planetIsLoading
+  }
+}
+const mapDispatchToProps = (dispatch) => {
+  return {
+      fetchData: () => dispatch(planetFetchData())
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchPlanet);
